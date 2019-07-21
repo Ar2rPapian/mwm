@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "929467698686",
+    "firebase_url": "https://monolith-1337.firebaseio.com",
+    "project_id": "monolith-1337",
+    "storage_bucket": "monolith-1337.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:929467698686:android:2d2bac23dad6cbac",
+        "android_client_info": {
+          "package_name": "com.leet.monolith"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "929467698686-vhqqjiueg2gmeph3cgtv3udi820q5f7s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_UaQhUNMX4KH4L7s6yjuSdFXHCt2dZhM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "929467698686-vhqqjiueg2gmeph3cgtv3udi820q5f7s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">monolith</string>
+
+    <string name="greeting_text">Welcome</string>
+
+    <string name="sign_in_btn_text">SIGN IN</string>
+    <string name="sign_up_btn_text">SIGN UP</string>
+
+
+    <!--CONTENT DESCRIPTIONS-->
+    <string name="launcher_image_cd">launcherImage</string>
+    <string name="greeting_text_cd">greeting</string>
+    <string name="splash_background_cd">splash_background_cd</string>
+    <string name="sign_in_email_hint">Enter your email</string>
+    <string name="sign_in_password_hint">Enter your password</string>
+</resources>
