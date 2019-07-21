@@ -1,33 +1,33 @@
 package com.leet.monolith.view.activities
 
-import android.content.Intent
 import android.os.Bundle
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.leet.monolith.R
-import com.leet.monolith.data.User
-import com.leet.monolith.util.getStringFromSharedPreferences
-import com.leet.monolith.util.removeStringFromSharedPreferences
-import kotlinx.android.synthetic.main.activity_main.*
+import com.leet.monolith.databinding.ActivityMainBinding
+import com.leet.monolith.viewmodel.MainViewModel
 
 
 class MainActivity : BaseActivity() {
 
+
+
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
-        setContentView(R.layout.activity_main)
-        val name = getStringFromSharedPreferences(this, "user_name")
-        val lastName = getStringFromSharedPreferences(this, "user_last_name")
-        val email = getStringFromSharedPreferences(this, "user_email")
-        val user = User(name?:"ERROR", lastName?:"ERROR", email?:"ERROR", "******")
-        userNameTv.text = user.name
-        userLastNameTv.text = user.lastName
+        val mainActivity :ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        val mainViewModel:MainViewModel = ViewModelProviders.of( this).get(MainViewModel::class.java)
 
-        signOutButton.setOnClickListener {
-            removeStringFromSharedPreferences(this, "user_name")
-            removeStringFromSharedPreferences(this, "user_last_name")
-            removeStringFromSharedPreferences(this, "user_email")
-            startActivity(Intent(this@MainActivity, LaunchActivity::class.java))
-            finish()
-        }
+        mainActivity.mainViewModel = mainViewModel
+        mainActivity.lifecycleOwner = this
+
+        mainViewModel.editText.observe(this, Observer {
+            val toString = it.toString()
+            mainViewModel.userLastName.value = toString
+            mainViewModel.userName.value = toString
+        })
+
+
     }
 
     override fun onBackPressed() {
