@@ -32,10 +32,14 @@ class SignInActivity : BaseActivity() {
                 showProgressBar()
                 val response = fetchUser(sign_in_email_et.text.toString().hashCode().toString(), sign_in_password_et.text.toString().hashCode().toString())
                 hideProgressBar()
-                sign_in_password_et.text.toString().hashCode().toString().debug(TAG)
                 when(response.status){
-                    LoginStatus.SUCCESS -> {Toast.makeText(applicationContext, "SUCCESS USER IS - ${response.user?.name}", Toast.LENGTH_LONG).show()}
-                    LoginStatus.FAILED -> {Toast.makeText(applicationContext, "INCORRECT CREDENTIALS", Toast.LENGTH_LONG).show()}
+                    LoginStatus.SUCCESS -> {
+                        errorMessageContainer.text = ""
+                        Toast.makeText(applicationContext, "SUCCESS USER IS - ${response.user?.name}", Toast.LENGTH_LONG).show()
+                    }
+                    LoginStatus.FAILED -> {
+                        errorMessageContainer.text = response.error
+                    }
                 }
             }
         }
@@ -69,19 +73,24 @@ class SignInActivity : BaseActivity() {
         val task = db.collection("consumers").document(username).get()
         while (!task.isComplete) {}
         val document = task.result!!
-
-        if (document.getString("password").equals(password)) {
-            status = LoginStatus.SUCCESS
-            user = User(
-                name = document.get("name").toString(),
-                lastName = document.get("lastName").toString(),
-                email = username,
-                password = document.get("password").toString()
-            )
-        } else {
+        if(document.exists()){
+            if (document.getString("password").equals(password)) {
+                status = LoginStatus.SUCCESS
+                user = User(
+                    name = document.get("name").toString(),
+                    lastName = document.get("lastName").toString(),
+                    email = username,
+                    password = document.get("password").toString()
+                )
+            } else {
+                status = LoginStatus.FAILED
+                error = "Incorrect Password"
+            }
+        }else{
             status = LoginStatus.FAILED
-            error = "Incorrect Password"
+            error = "Incorrect Email"
         }
+
         return LoginResponse(status, error, user)
     }
 
