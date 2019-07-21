@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import com.leet.monolith.data.User
 import com.leet.monolith.util.animateProgressBar
+import com.leet.monolith.util.getStringFromSharedPreferences
 import kotlin.random.Random
 
 
@@ -21,10 +22,13 @@ class SplashActivity : BaseActivity() {
 
         animateProgressBar(findViewById(com.leet.monolith.R.id.progress_bar))
 
-        User("da","ddd","aaa","ewq")
-
         Handler().postDelayed({
-            startActivity(Intent(this@SplashActivity, LaunchActivity::class.java))
+            val user = getStringFromSharedPreferences(this, "user")
+            if(user != null && user.length > 0){
+                startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+            }else{
+                startActivity(Intent(this@SplashActivity, LaunchActivity::class.java))
+            }
             finish()
         }, splashTimeout.toLong())
     }

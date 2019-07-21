@@ -1,16 +1,17 @@
 package com.leet.monolith.view.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
-import com.google.firebase.firestore.FirebaseFirestore
 import com.leet.monolith.R
 import com.leet.monolith.data.LoginResponse
 import com.leet.monolith.data.LoginStatus
-import com.leet.monolith.data.User
+import com.leet.monolith.network.auth.Auth
+import com.leet.monolith.util.addString2SharedPreferences
 import com.leet.monolith.util.animateProgressBar
-import kotlinx.android.synthetic.main.activity_launch.sing_in_button
 import kotlinx.android.synthetic.main.activity_sign_in.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -26,16 +27,22 @@ class SignInActivity : BaseActivity() {
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
         setContentView(R.layout.activity_sign_in)
-
-        sing_in_button.setOnClickListener {
+        signUpLink.setOnClickListener {
+            startActivity(Intent(this@SignInActivity, SignUpActivity::class.java))
+        }
+        signInButton.setOnClickListener {
             GlobalScope.launch(Dispatchers.Main) {
                 showProgressBar()
-                val response = fetchUser(sign_in_email_et.text.toString().hashCode().toString(), sign_in_password_et.text.toString().hashCode().toString())
+                val response = fetchUser(signInEmailEt.text.toString(), signInPasswordEt.text.toString())
                 hideProgressBar()
                 when(response.status){
                     LoginStatus.SUCCESS -> {
                         errorMessageContainer.text = ""
-                        Toast.makeText(applicationContext, "SUCCESS USER IS - ${response.user?.name}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(applicationContext, "SUCCESS USER IS - ${response.user!!.name}", Toast.LENGTH_LONG).show()
+                        addString2SharedPreferences(applicationContext,"user_name", response.user.name )
+                        addString2SharedPreferences(applicationContext,"user_last_name", response.user.lastName )
+                        addString2SharedPreferences(applicationContext,"user_email", response.user.email)
+                        startActivity(Intent(this@SignInActivity, MainActivity::class.java))
                     }
                     LoginStatus.FAILED -> {
                         errorMessageContainer.text = response.error
@@ -48,7 +55,7 @@ class SignInActivity : BaseActivity() {
 
     suspend fun fetchUser(username:String, password:String): LoginResponse {
         return GlobalScope.async(Dispatchers.IO) {
-            login(username, password)
+            Auth.login(username, password)
         }.await()
     }
 
@@ -65,33 +72,5 @@ class SignInActivity : BaseActivity() {
     }
 
 
-    fun login(username: String, password: String): LoginResponse {
-        val db = FirebaseFirestore.getInstance()
-        var user: User? = null
-        var error: String? = null
-        var status: LoginStatus? = null
-        val task = db.collection("consumers").document(username).get()
-        while (!task.isComplete) {}
-        val document = task.result!!
-        if(document.exists()){
-            if (document.getString("password").equals(password)) {
-                status = LoginStatus.SUCCESS
-                user = User(
-                    name = document.get("name").toString(),
-                    lastName = document.get("lastName").toString(),
-                    email = username,
-                    password = document.get("password").toString()
-                )
-            } else {
-                status = LoginStatus.FAILED
-                error = "Incorrect Password"
-            }
-        }else{
-            status = LoginStatus.FAILED
-            error = "Incorrect Email"
-        }
-
-        return LoginResponse(status, error, user)
-    }
 
 }
