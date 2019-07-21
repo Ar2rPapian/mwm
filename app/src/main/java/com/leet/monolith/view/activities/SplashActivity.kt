@@ -23,7 +23,7 @@ class SplashActivity : BaseActivity() {
         animateProgressBar(findViewById(com.leet.monolith.R.id.progress_bar))
 
         Handler().postDelayed({
-            val user = getStringFromSharedPreferences(this, "user")
+            val user = getStringFromSharedPreferences(this, "user_name")
             if(user != null && user.length > 0){
                 startActivity(Intent(this@SplashActivity, MainActivity::class.java))
             }else{
