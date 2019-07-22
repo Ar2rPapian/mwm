@@ -22,7 +22,7 @@ object Auth {
                     name = document.get("name").toString(),
                     lastName = document.get("lastName").toString(),
                     email = username,
-                    password = document.get("password").toString()
+                    password = password
                 )
             } else {
                 status = LoginStatus.FAILED
