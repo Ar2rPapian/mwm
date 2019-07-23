@@ -1,7 +1,9 @@
 package com.leet.monolith.view.activities
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 
@@ -21,5 +23,9 @@ open class BaseActivity : AppCompatActivity() {
     }
     fun String.info(tag: String){
         Log.i(tag, this)
+    }
+
+    infix fun Context.showToast(message: String){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

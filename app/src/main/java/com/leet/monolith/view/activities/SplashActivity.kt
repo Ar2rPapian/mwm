@@ -27,8 +27,8 @@ class SplashActivity : BaseActivity() {
 
 
         Handler().postDelayed({
-            val user = getStringFromSharedPreferences(this, "user_name")
-            if(user != null && user.length > 0){
+            val user = getStringFromSharedPreferences(this, "user_name_")
+            if(user != null && user.isNotEmpty()){
                 startActivity(Intent(this@SplashActivity, MainActivity::class.java))
             }else{
                 startActivity(Intent(this@SplashActivity, LaunchActivity::class.java))

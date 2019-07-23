@@ -2,17 +2,14 @@ package com.leet.monolith.view.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import com.leet.monolith.R
-import com.leet.monolith.data.SignUpResponse
-import com.leet.monolith.data.SignUpStatus
+import com.leet.monolith.data.Result
 import com.leet.monolith.data.User
-import com.leet.monolith.network.auth.Auth
+import com.leet.monolith.network.auth.Authorisation
 import com.leet.monolith.util.addString2SharedPreferences
 import kotlinx.android.synthetic.main.activity_sign_up.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class SignUpActivity: BaseActivity() {
@@ -32,34 +29,25 @@ class SignUpActivity: BaseActivity() {
             if(name.length > 3 && lastName.length > 3 && email.contains("@") && email.length > 6 && password.length > 6) {
                 val user = User(name = name, lastName = lastName, email = email, password = password)
                 GlobalScope.launch(Dispatchers.Main) {
-                    val response = createNewUser(user)
-                    when(response.status){
-                        SignUpStatus.SUCCESS -> {
-                            response.user.toString().debug("GVIDON")
-                            Toast.makeText(applicationContext, "SUCCESS USER IS - ${response.user!!.toString()}", Toast.LENGTH_LONG).show()
-                            addString2SharedPreferences(applicationContext,"user_name", response.user.name )
-                            addString2SharedPreferences(applicationContext,"user_last_name", response.user.lastName )
-                            addString2SharedPreferences(applicationContext,"user_email", response.user.email)
+                    when(val result =  Authorisation.createUser(user)){
+                        is Result.SUCCESS -> {
+                            application showToast "SUCCESS USER IS - ${result.user}"
+                            addString2SharedPreferences(applicationContext,"user_name", result.user.name )
+                            addString2SharedPreferences(applicationContext,"user_last_name", result.user.lastName )
+                            addString2SharedPreferences(applicationContext,"user_email", result.user.email)
                             startActivity(Intent(this@SignUpActivity, MainActivity::class.java))
                             finish()
                         }
-                        SignUpStatus.FAILED -> {
-                            Toast.makeText(applicationContext, "ERROR - ${response.error}", Toast.LENGTH_LONG).show()
+                        is Result.FAILED -> {
+                            application showToast "ERROR - ${result.error}"
                         }
                     }
                 }
-//
             } else {
-                Toast.makeText(applicationContext, "Please check your data", Toast.LENGTH_SHORT).show()
+                application showToast "Please check your data"
             }
 
         }
     }
 
-
-    private suspend fun createNewUser(user:User): SignUpResponse {
-        return GlobalScope.async(Dispatchers.IO) {
-            Auth.createUser(user)
-        }.await()
-    }
 }
